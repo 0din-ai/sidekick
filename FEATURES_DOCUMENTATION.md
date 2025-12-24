@@ -1,7 +1,7 @@
 # 0DIN Sidekick v1.0 - Enhanced Features Documentation
 
 ## Overview
-0DIN Sidekick v1.0 includes 18 advanced security monitoring features for authorized testing. This document explains how to use each feature.
+0DIN Sidekick v1.0 includes advanced security monitoring features. This document explains how to use each feature.
 
 ## Browser Compatibility
 
@@ -236,7 +236,6 @@ Choose the appropriate folder for your browser:
 
 ## Security Considerations
 
-- **Authorized Use Only**: Use only on systems you own or have permission to test
 - **Data Truncation**: Sensitive data is automatically truncated for safety
 - **Local Storage**: All data stored locally in browser storage, not transmitted
 - **Universal Monitoring**: Now monitors ALL websites to track third-party data flows
@@ -314,8 +313,6 @@ For issues or questions:
 For browser-specific help:
 - **Chromium users**: See `Chromium extension/README.md`
 - **Firefox users**: See `Firefox Add-on/README.md`
-
-Remember: This tool is for authorized security testing only. Always ensure you have permission before testing any system.
 
 ---
 

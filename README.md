@@ -1,18 +1,5 @@
 # 0DIN Sidekick Security Research Tool
 
-## ⚠️ IMPORTANT DISCLAIMER ⚠️
-
-This browser extension/add-on is designed for **AUTHORIZED SECURITY RESEARCH ONLY**. It should only be used on systems you own or have explicit permission to test. Unauthorized use may violate laws and terms of service.
-
-## Purpose
-
-This extension monitors browser data handling to identify potential security concerns in web applications, specifically focused on:
-- Data storage patterns
-- Network request security
-- Authentication token handling
-- Cookie management
-- Sensitive data exposure
-
 ## Browser Compatibility
 
 **Supported Browsers:**
@@ -50,27 +37,14 @@ For permanent Firefox installation, see the README in the `Firefox Add-on` folde
 ## Features
 
 ### Content Script Monitoring
-- **localStorage/sessionStorage**: Monitors all storage operations
-- **Network Requests**: Tracks fetch() and XMLHttpRequest calls
 - **WebSocket Connections**: Monitors WebSocket data transmission
 - **PostMessage**: Tracks cross-origin communication
 - **DOM Scanning**: Identifies sensitive input fields and data attributes
-- **Cookie Access**: Monitors cookie read/write operations
 
 ### Background Processing
 - Collects findings from content scripts
 - Monitors HTTP headers via webRequest API
-- Tracks cookie changes
-- Monitors navigation to auth-related URLs
-
-### Security Patterns Detected
-- Bearer tokens
-- API keys (sk-*)
-- Session tokens
-- JWT tokens
-- Authentication headers
-- Password fields
-- Sensitive data attributes
+- Monitors navigation events
 
 ## How It Works
 
