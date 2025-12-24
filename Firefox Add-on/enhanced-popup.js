@@ -3808,14 +3808,14 @@ async function submit0dinShare() {
         'Misinformation/Disinformation': 'misinformation_disinformation'
     };
 
-    // Map LLM to model_id (default to 1 if not found)
+    // Map LLM to model_id (using valid production model IDs)
     const llmToModelId = {
-        'chatgpt': 1,
-        'anthropic': 2,
-        'gemini': 3,
-        'openrouter': 1
+        'chatgpt': 13,      // GPT-4o
+        'anthropic': 2,     // Claude 3.5 Sonnet
+        'gemini': 22,       // Gemini 2.0 Flash
+        'openrouter': 17    // Other Models
     };
-    const modelId = llmToModelId[llm] || 1;
+    const modelId = llmToModelId[llm] || 17; // Default to "Other Models"
 
     // Build submission data for 0DIN API
     const submissionData = {
