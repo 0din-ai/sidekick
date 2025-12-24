@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>0DIN Sidekick - Advanced Security Research Tool</title>
+    <style>
+        body {
+            width: 500px;
+            min-height: 600px;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px 15px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            border-bottom: 2px solid #ffd700;
+        }
+        
+        .content {
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        /* Dashboard Styles */
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .risk-indicator {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .risk-level {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .risk-badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .risk-low {
+            background: #4CAF50;
+        }
+        
+        .risk-medium {
+            background: #FF9800;
+        }
+        
+        .risk-high {
+            background: #f44336;
+        }
+        
+        .risk-critical {
+            background: #b71c1c;
+        }
+        /* Network Analysis Styles */
+        
+        .request-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        
+        .request-url {
+            color: #ffd700;
+            word-break: break-all;
+            margin-bottom: 5px;
+        }
+        
+        .request-meta {
+            display: flex;
+            gap: 15px;
+            opacity: 0.8;
+            font-size: 11px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        /* Storage Analysis Styles */
+        
+        .storage-summary {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .storage-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        /* Data Classification Styles */
+        
+        .classification-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #ff0000;
+        }
+        
+        .classification-type {
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+        
+        .classification-details {
+            font-size: 11px;
+            opacity: 0.9;
+            word-break: break-all;
+        }
+        /* Fingerprint Detection Styles */
+        
+        .fingerprint-alert {
+            background: rgba(255, 100, 100, 0.2);
+            border: 2px solid #ff6464;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .fingerprint-technique {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        /* Action Buttons */
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        button {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.9);
+            color: #764ba2;
+            border: none;
+            padding: 10px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+        
+        button.danger {
+            background: rgba(255, 100, 100, 0.9);
+            color: white;
+        }
+        
+        button.primary {
+            background: rgba(255, 215, 0, 0.9);
+            color: #333;
+        }
+        /* Scrollbar */
+        
+         ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+        
+         ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        /* Loading Spinner */
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .empty-state {
+            text-align: center;
+            opacity: 0.6;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        .feature-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+        
+        .status-active {
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-inactive {
+            background: #666;
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        /* Prompter Tab Styles */
+
+        .prompt-textarea,
+        .response-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .prompt-textarea:focus,
+        .response-textarea:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .prompt-textarea::placeholder,
+        .response-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+        }
+
+        .llm-dropdown {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .llm-dropdown:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .llm-dropdown option {
+            background: #764ba2;
+            color: white;
+            padding: 10px;
+        }
+
+        .gear-btn {
+            width: auto;
+            padding: 0;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.2);
+            opacity: 0.8;
+        }
+
+        .copy-icon:hover {
+            transform: scale(1.2);
+            opacity: 0.8;
+        }
+
+        /* Template Styles */
+        .template-category {
+            margin-bottom: 20px;
+        }
+
+        .template-category-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .template-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid #ffd700;
+        }
+
+        .template-card:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateX(5px);
+        }
+
+        .template-title {
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .template-preview {
+            font-size: 11px;
+            opacity: 0.8;
+            color: rgba(255, 255, 255, 0.7);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* History Styles */
+        .history-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            position: relative;
+            border-left: 4px solid #6495ed;
+        }
+
+        .history-item.success {
+            border-left-color: #4CAF50;
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .history-timestamp {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        .history-llm {
+            font-size: 11px;
+            padding: 3px 8px;
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 3px;
+        }
+
+        .history-content {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .history-prompt {
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 4px;
+        }
+
+        .history-response {
+            opacity: 0.9;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .history-btn {
+            padding: 4px 8px;
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .history-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Tag Styles */
+        .tag-option {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tag-option:hover {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
+        }
+
+        .tag-option.selected {
+            background: rgba(255, 215, 0, 0.5);
+            border-color: #ffd700;
+            font-weight: bold;
+        }
+
+        .selected-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: rgba(255, 215, 0, 0.4);
+            border: 1px solid #ffd700;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .selected-tag .remove-tag {
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .selected-tag .remove-tag:hover {
+            opacity: 1;
+        }
+
+        /* Comparison Styles */
+        .comparison-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #6495ed;
+        }
+
+        .comparison-card.success {
+            border-left-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .comparison-card.failed {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comparison-llm-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #ffd700;
+        }
+
+        .comparison-status {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .comparison-status.success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .comparison-status.failed {
+            background: #f44336;
+            color: white;
+        }
+
+        .comparison-status.loading {
+            background: #FF9800;
+            color: white;
+        }
+
+        .comparison-response {
+            font-size: 13px;
+            line-height: 1.5;
+            max-height: 300px;
+            overflow-y: auto;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .comparison-time {
+            margin-top: 10px;
+            font-size: 11px;
+            opacity: 0.6;
+            text-align: right;
+        }
+
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .settings-modal.active {
+            display: flex;
+        }
+
+        .settings-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 450px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .settings-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: white;
+        }
+
+        .api-key-section {
+            margin-bottom: 15px;
+        }
+
+        .api-key-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: white;
+        }
+
+        .api-key-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .api-key-input:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .api-key-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .save-settings-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>
+            🎯 0DIN Sidekick
+            <span style="font-size: 12px; opacity: 0.8;">v1.0</span>
+        </h1>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" data-tab="prompter">Prompter</button>
+        <button class="tab" data-tab="tokenusage">Token Usage</button>
+        <button class="tab" data-tab="settings">Settings</button>
+    </div>
+
+    <div class="content">
+        <!-- Prompter Tab -->
+        <div class="tab-content active" id="prompter">
+            <!-- Action Buttons -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px;">
+                <button id="templatesBtn" style="background: rgba(255, 215, 0, 0.3); padding: 8px 12px; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; color: white; transition: all 0.3s;">📚 Templates</button>
+                <button id="historyBtn" style="background: rgba(100, 150, 255, 0.3); padding: 8px 12px; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; color: white; transition: all 0.3s;">📜 History</button>
+                <button id="compareBtn" style="background: rgba(100, 255, 150, 0.3); padding: 8px 12px; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; color: white; transition: all 0.3s;">⚖️ Compare</button>
+                <button id="autoTestBtn" style="background: rgba(255, 150, 100, 0.3); padding: 8px 12px; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; color: white; transition: all 0.3s;">🧪 Auto-Test</button>
+            </div>
+
+            <!-- Mode Toggles -->
+            <div style="display: flex; gap: 15px; margin-bottom: 15px; padding: 8px; background: rgba(0, 0, 0, 0.2); border-radius: 6px;">
+                <label style="display: flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer;">
+                    <input type="checkbox" id="chainModeToggle" checked style="cursor: pointer;">
+                    🔗 Chain Mode
+                </label>
+                <label style="display: flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer;">
+                    <input type="checkbox" id="autoDetectSuccess" checked style="cursor: pointer;">
+                    Auto-detect Success
+                </label>
+            </div>
+
+            <!-- Conversation Chain Display -->
+            <div id="conversationChain" style="display: none; background: rgba(0, 0, 0, 0.3); border-radius: 8px; padding: 10px; margin-bottom: 10px; max-height: 200px; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="font-size: 12px;">📜 Conversation Chain (Turn <span id="chainTurnCount">0</span>)</strong>
+                    <button id="clearChainBtn" style="background: rgba(255, 100, 100, 0.5); border: none; padding: 4px 8px; font-size: 10px; border-radius: 4px; cursor: pointer; color: white;">Clear Chain</button>
+                </div>
+                <div id="chainMessages"></div>
+            </div>
+
+            <!-- Follow-up Suggestion -->
+            <div id="followUpSuggestion" style="display: none; background: rgba(255, 215, 0, 0.2); border: 2px solid rgba(255, 215, 0, 0.5); border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="font-size: 12px;">💡 Suggested Follow-up (<span id="followUpStrategy"></span>)</strong>
+                    <div style="display: flex; gap: 5px;">
+                        <button id="sendFollowUpBtn" style="background: rgba(100, 255, 100, 0.7); border: none; padding: 4px 10px; font-size: 11px; border-radius: 4px; cursor: pointer; color: white; font-weight: bold;">✓ Send</button>
+                        <button id="editFollowUpBtn" style="background: rgba(100, 150, 255, 0.7); border: none; padding: 4px 10px; font-size: 11px; border-radius: 4px; cursor: pointer; color: white;">✎ Edit</button>
+                        <button id="dismissFollowUpBtn" style="background: rgba(255, 100, 100, 0.7); border: none; padding: 4px 10px; font-size: 11px; border-radius: 4px; cursor: pointer; color: white;">✗ Dismiss</button>
+                    </div>
+                </div>
+                <div id="followUpPromptText" style="font-size: 11px; padding: 8px; background: rgba(0, 0, 0, 0.3); border-radius: 4px; white-space: pre-wrap;"></div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 0;">
+                <h3 style="margin: 0;">Prompt</h3>
+                <span class="copy-icon" id="copyPromptBtn" title="Copy Prompt" style="cursor: pointer; font-size: 16px; transition: transform 0.2s; display: inline-block;">📋</span>
+            </div>
+            <textarea class="prompt-textarea" placeholder="Enter Your Jailbreak or Prompt Injection"></textarea>
+
+            <div class="actions" style="margin-top: 10px;">
+                <button class="primary" id="sendPromptBtn">Send</button>
+                <button id="share0dinBtn" style="background: rgba(255, 100, 100, 0.9);">🎯 Submit to 0DIN</button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 15px;">
+                <h3 style="margin: 0;">Response</h3>
+                <span class="copy-icon" id="copyResponseBtn" title="Copy Response" style="cursor: pointer; font-size: 16px; transition: transform 0.2s; display: inline-block;">📋</span>
+            </div>
+            <textarea class="response-textarea" placeholder="Liberate"></textarea>
+
+            <div style="margin-top: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Select LLM</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select class="llm-dropdown" style="width: 100%;">
+                        <option value="chatgpt">ChatGPT</option>
+                        <option value="anthropic">Anthropic</option>
+                        <option value="gemini">Gemini</option>
+                        <option value="openrouter">OpenRouter</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Token Usage Tab -->
+        <div class="tab-content" id="tokenusage">
+            <h3>🪙 LLM Token Usage Tracker</h3>
+
+            <div id="tokenUsageSection" style="background: rgba(255, 215, 0, 0.15); border: 2px solid rgba(255, 215, 0, 0.4); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <strong style="font-size: 13px;">Summary</strong>
+                    <button id="resetTokensBtn" style="background: rgba(255, 100, 100, 0.5); border: none; padding: 4px 8px; font-size: 10px; border-radius: 4px; cursor: pointer; color: white;">Reset</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px;">
+                    <div style="background: rgba(0, 0, 0, 0.3); padding: 8px; border-radius: 4px; text-align: center;">
+                        <div style="font-size: 18px; font-weight: bold; color: #ffd700;" id="totalTokens">0</div>
+                        <div style="font-size: 10px; opacity: 0.8;">Total Tokens</div>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.3); padding: 8px; border-radius: 4px; text-align: center;">
+                        <div style="font-size: 18px; font-weight: bold; color: #4CAF50;" id="totalCost">$0.00</div>
+                        <div style="font-size: 10px; opacity: 0.8;">Total Cost</div>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.3); padding: 8px; border-radius: 4px; text-align: center;">
+                        <div style="font-size: 18px; font-weight: bold; color: #2196F3;" id="apiCallCount">0</div>
+                        <div style="font-size: 10px; opacity: 0.8;">API Calls</div>
+                    </div>
+                </div>
+
+                <div id="tokenBreakdown" style="font-size: 11px; background: rgba(0, 0, 0, 0.2); padding: 8px; border-radius: 4px;">
+                    <div style="opacity: 0.7;">No LLM API calls detected yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-content" id="settings">
+            <h3>⚙️ API Key Settings</h3>
+
+            <div style="background: rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                <p style="font-size: 12px; opacity: 0.8; margin-bottom: 15px;">
+                    Configure your API keys for different LLM providers. These keys are stored locally in your browser.
+                </p>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #ffd700;">
+                        ChatGPT API Key
+                    </label>
+                    <input type="password" id="chatgptKeySettings" placeholder="sk-..."
+                           style="width: 100%; padding: 8px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 4px; color: white; font-size: 12px;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #ffd700;">
+                        Anthropic API Key
+                    </label>
+                    <input type="password" id="anthropicKeySettings" placeholder="sk-ant-..."
+                           style="width: 100%; padding: 8px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 4px; color: white; font-size: 12px;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #ffd700;">
+                        Gemini API Key
+                    </label>
+                    <input type="password" id="geminiKeySettings" placeholder="AIza..."
+                           style="width: 100%; padding: 8px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 4px; color: white; font-size: 12px;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #ffd700;">
+                        OpenRouter API Key
+                    </label>
+                    <input type="password" id="openrouterKeySettings" placeholder="sk-or-..."
+                           style="width: 100%; padding: 8px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 4px; color: white; font-size: 12px;">
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #ffd700;">
+                        0DIN Researcher API Key
+                    </label>
+                    <input type="password" id="odinResearcherKeySettings" placeholder="0din-..."
+                           style="width: 100%; padding: 8px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 4px; color: white; font-size: 12px;">
+                    <div style="font-size: 11px; opacity: 0.7; margin-top: 5px;">
+                        Required for submitting vulnerabilities to 0DIN. Get your API at <a href="https://0din.ai/users/edit" target="_blank" style="color: #ffd700; text-decoration: underline;">https://0din.ai/users/edit</a> create a token at the bottom of the page.
+                    </div>
+                </div>
+
+                <button id="saveSettingsTabBtn" class="primary" style="width: 100%; padding: 10px; background: rgba(76, 175, 80, 0.5); border: none; border-radius: 4px; color: white; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.3s;">
+                    💾 Save API Keys
+                </button>
+
+                <div id="settingsStatus" style="margin-top: 10px; text-align: center; font-size: 12px; color: #4CAF50; display: none;"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-box">
+            <div class="settings-header">⚙️ API Key Settings</div>
+
+            <div class="api-key-section">
+                <label class="api-key-label">ChatGPT API Key</label>
+                <input type="password" class="api-key-input" id="chatgptKey" placeholder="sk-...">
+            </div>
+
+            <div class="api-key-section">
+                <label class="api-key-label">Anthropic API Key</label>
+                <input type="password" class="api-key-input" id="anthropicKey" placeholder="sk-ant-...">
+            </div>
+
+            <div class="api-key-section">
+                <label class="api-key-label">Gemini API Key</label>
+                <input type="password" class="api-key-input" id="geminiKey" placeholder="AIza...">
+            </div>
+
+            <div class="api-key-section">
+                <label class="api-key-label">OpenRouter API Key</label>
+                <input type="password" class="api-key-input" id="openrouterKey" placeholder="sk-or-...">
+            </div>
+
+            <button class="primary save-settings-btn" id="saveSettingsBtn">Save</button>
+        </div>
+    </div>
+
+    <!-- Templates Modal -->
+    <div class="settings-modal" id="templatesModal">
+        <div class="settings-box" style="max-width: 90%; width: 700px; max-height: 90%; padding: 20px; position: relative;">
+            <div class="settings-header">
+                📚 Prompt Templates
+                <span id="addTemplateBtn" style="cursor: pointer; font-size: 24px; margin-left: 10px; transition: transform 0.2s; display: inline-block;" title="Add Custom Template">➕</span>
+            </div>
+            <button id="closeTemplatesBtn" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 20px; cursor: pointer; width: 30px; height: 30px; border-radius: 4px;">×</button>
+
+            <!-- Add Template Form -->
+            <div id="addTemplateForm" style="display: none; background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 8px; margin-top: 15px; border: 2px solid rgba(255, 215, 0, 0.5);">
+                <div style="font-weight: bold; margin-bottom: 10px; color: #ffd700;">➕ Add Custom Template</div>
+                <input type="text" id="newTemplateTitle" placeholder="Template Title" style="width: 100%; padding: 8px; margin-bottom: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 4px; color: white; font-size: 14px;">
+                <select id="newTemplateCategory" style="width: 100%; padding: 8px; margin-bottom: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 4px; color: white; font-size: 14px;">
+                    <option value="Custom">Custom</option>
+                    <option value="DAN">DAN</option>
+                    <option value="Roleplay">Roleplay</option>
+                    <option value="Hypothetical">Hypothetical</option>
+                    <option value="System Prompts">System Prompts</option>
+                    <option value="Prompt Injection">Prompt Injection</option>
+                </select>
+                <textarea id="newTemplatePrompt" placeholder="Enter your custom prompt template..." style="width: 100%; padding: 8px; margin-bottom: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 4px; color: white; font-size: 14px; min-height: 100px; resize: vertical;"></textarea>
+                <div style="display: flex; gap: 10px;">
+                    <button id="saveTemplateBtn" style="flex: 1; background: rgba(100, 255, 100, 0.7); border: none; padding: 8px; border-radius: 4px; cursor: pointer; color: white; font-weight: bold;">✓ Save Template</button>
+                    <button id="cancelTemplateBtn" style="flex: 1; background: rgba(255, 100, 100, 0.7); border: none; padding: 8px; border-radius: 4px; cursor: pointer; color: white;">✗ Cancel</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 15px; max-height: 500px; overflow-y: auto;">
+                <div id="templatesContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div class="settings-modal" id="historyModal">
+        <div class="settings-box" style="max-width: 90%; width: 700px; max-height: 90%; padding: 20px; position: relative;">
+            <div class="settings-header">📜 Prompt History</div>
+            <button id="closeHistoryBtn" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 20px; cursor: pointer; width: 30px; height: 30px; border-radius: 4px;">×</button>
+
+            <div style="margin-top: 15px;">
+                <input type="text" id="historySearch" placeholder="Search history..." style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; margin-bottom: 10px; box-sizing: border-box;">
+
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <button id="exportHistoryBtn" class="primary" style="flex: 1;">📥 Export History</button>
+                    <button id="clearHistoryBtn" class="danger" style="flex: 1;">🗑️ Clear History</button>
+                </div>
+            </div>
+
+            <div style="max-height: 400px; overflow-y: auto; margin-top: 10px;" id="historyContainer">
+                <div class="empty-state">No history yet</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Modal -->
+    <div class="settings-modal" id="compareModal">
+        <div class="settings-box" style="max-width: 95%; width: 1000px; max-height: 95%; padding: 20px; position: relative;">
+            <div class="settings-header">⚖️ Multi-LLM Comparison</div>
+            <button id="closeCompareBtn" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 20px; cursor: pointer; width: 30px; height: 30px; border-radius: 4px;">×</button>
+
+            <div style="margin-top: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600;">Select LLMs to Compare:</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                        <input type="checkbox" class="compare-llm-checkbox" value="chatgpt" checked>
+                        ChatGPT
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                        <input type="checkbox" class="compare-llm-checkbox" value="anthropic" checked>
+                        Anthropic
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                        <input type="checkbox" class="compare-llm-checkbox" value="gemini" checked>
+                        Gemini
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                        <input type="checkbox" class="compare-llm-checkbox" value="openrouter" checked>
+                        OpenRouter
+                    </label>
+                </div>
+
+                <button id="runComparisonBtn" class="primary" style="width: 100%; margin-bottom: 15px;">▶️ Run Comparison</button>
+
+                <div id="comparisonResults" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; max-height: 500px; overflow-y: auto;">
+                    <div class="empty-state">Select LLMs and click "Run Comparison"</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-Test Modal -->
+    <div class="settings-modal" id="autoTestModal">
+        <div class="settings-box" style="max-width: 90%; width: 800px; max-height: 95%; padding: 20px; position: relative; overflow-y: auto;">
+            <div class="settings-header">🧪 Auto-Test Mode</div>
+            <button id="closeAutoTestBtn" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 20px; cursor: pointer; width: 30px; height: 30px; border-radius: 4px;">×</button>
+
+            <!-- Template Selection -->
+            <div style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <label style="font-weight: 600; font-size: 14px;">Select Prompts to Test:</label>
+                    <label style="cursor: pointer; font-size: 12px; background: rgba(255,215,0,0.2); padding: 4px 8px; border-radius: 4px;">
+                        <input type="checkbox" id="selectAllTemplates" style="cursor: pointer;">
+                        Select All Templates
+                    </label>
+                </div>
+                <div id="autoTestTemplateList" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; max-height: 200px; overflow-y: auto;">
+                    <!-- Will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- LLM Selection -->
+            <div style="margin-top: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 600; font-size: 14px;">Select LLMs:</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <label style="display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                        <input type="checkbox" class="autotest-llm-checkbox" value="chatgpt" checked>
+                        ChatGPT
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                        <input type="checkbox" class="autotest-llm-checkbox" value="anthropic" checked>
+                        Anthropic
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                        <input type="checkbox" class="autotest-llm-checkbox" value="gemini" checked>
+                        Gemini
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                        <input type="checkbox" class="autotest-llm-checkbox" value="openrouter">
+                        OpenRouter
+                    </label>
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div style="margin-top: 20px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 600; font-size: 14px;">Options:</label>
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-size: 13px;">Delay between tests:</label>
+                        <input type="number" id="autoTestDelay" value="2" min="0" max="10" step="0.5" style="width: 80px; padding: 6px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; color: white;"> seconds
+                    </div>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                        <input type="checkbox" id="stopOnSuccess" checked style="cursor: pointer;">
+                        Stop on first success per prompt
+                    </label>
+                </div>
+            </div>
+
+            <!-- Control Buttons -->
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button id="startAutoTestBtn" class="primary" style="flex: 1; font-size: 14px; font-weight: bold;">▶ Start Auto-Test</button>
+                <button id="pauseAutoTestBtn" class="primary" style="flex: 1; background: rgba(255,200,0,0.8); display: none;">⏸ Pause</button>
+                <button id="stopAutoTestBtn" class="danger" style="flex: 1; display: none;">⏹ Stop</button>
+            </div>
+
+            <!-- Progress Section -->
+            <div id="autoTestProgress" style="display: none; margin-top: 20px;">
+                <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <strong style="font-size: 14px;">Progress:</strong>
+                        <span id="autoTestProgressText" style="font-size: 13px; color: #ffd700;">0/0 (0%)</span>
+                    </div>
+                    <div style="width: 100%; height: 25px; background: rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; margin-bottom: 10px;">
+                        <div id="autoTestProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: width 0.3s;"></div>
+                    </div>
+                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 15px;">
+                        <strong>Current:</strong> <span id="autoTestCurrentTest">Waiting...</span>
+                    </div>
+
+                    <!-- Live Results -->
+                    <div style="margin-top: 15px;">
+                        <strong style="font-size: 13px; display: block; margin-bottom: 8px;">Live Results:</strong>
+                        <div id="autoTestLiveResults" style="max-height: 200px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px;">
+                            <!-- Results will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Download Report Button -->
+            <div id="autoTestDownloadSection" style="display: none; margin-top: 20px;">
+                <button id="downloadAutoTestReport" class="primary" style="width: 100%; font-size: 14px; font-weight: bold;">📥 Download HTML Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit to 0DIN Modal -->
+    <div class="settings-modal" id="share0dinModal">
+        <div class="settings-box" style="max-width: 90%; width: 700px; max-height: 95%; padding: 20px; position: relative; overflow-y: auto;">
+            <div class="settings-header">🎯 Submit to 0DIN</div>
+            <button id="closeShare0dinBtn" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 20px; cursor: pointer; width: 30px; height: 30px; border-radius: 4px;">×</button>
+
+            <div style="margin-top: 20px;">
+                <!-- Title -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px;">Title:</label>
+                    <input type="text" id="share0dinTitle" placeholder="e.g., DAN 5.0 - ChatGPT Safety Bypass" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; color: white; font-size: 14px;">
+                </div>
+
+                <!-- Summary -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px;">Summary:</label>
+                    <textarea id="share0dinSummary" placeholder="Brief description of the vulnerability..." style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; color: white; font-size: 14px; min-height: 60px; resize: vertical;"></textarea>
+                </div>
+
+                <!-- Prompt -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px;">Prompt Used:</label>
+                    <textarea id="share0dinPrompt" readonly style="width: 100%; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 12px; min-height: 80px; resize: vertical; opacity: 0.9;"></textarea>
+                </div>
+
+                <!-- Response -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px;">LLM Response:</label>
+                    <textarea id="share0dinResponse" readonly style="width: 100%; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; font-size: 12px; min-height: 100px; resize: vertical; opacity: 0.9;"></textarea>
+                </div>
+
+                <!-- Category -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px;">Vulnerability Category:</label>
+                    <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 6px;">
+                        <label style="display: block; margin-bottom: 8px; cursor: pointer; font-size: 12px;">
+                            <input type="radio" name="share0dinCategory" value="Content Policy Bypass" checked style="margin-right: 6px; cursor: pointer;">
+                            Content Policy Bypass
+                        </label>
+                        <label style="display: block; margin-bottom: 8px; cursor: pointer; font-size: 12px;">
+                            <input type="radio" name="share0dinCategory" value="Safety Guardrail Bypass" style="margin-right: 6px; cursor: pointer;">
+                            Safety Guardrail Bypass
+                        </label>
+                        <label style="display: block; margin-bottom: 8px; cursor: pointer; font-size: 12px;">
+                            <input type="radio" name="share0dinCategory" value="Instruction Following Failure" style="margin-right: 6px; cursor: pointer;">
+                            Instruction Following Failure
+                        </label>
+                        <label style="display: block; margin-bottom: 8px; cursor: pointer; font-size: 12px;">
+                            <input type="radio" name="share0dinCategory" value="Harmful Content Generation" style="margin-right: 6px; cursor: pointer;">
+                            Harmful Content Generation
+                        </label>
+                        <label style="display: block; cursor: pointer; font-size: 12px;">
+                            <input type="radio" name="share0dinCategory" value="Misinformation/Disinformation" style="margin-right: 6px; cursor: pointer;">
+                            Misinformation/Disinformation
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Severity -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px;">Severity Level:</label>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 5px; background: rgba(76, 175, 80, 0.3); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                            <input type="radio" name="share0dinSeverity" value="Low" style="cursor: pointer;">
+                            Low
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; background: rgba(255, 152, 0, 0.3); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                            <input type="radio" name="share0dinSeverity" value="Medium" checked style="cursor: pointer;">
+                            Medium
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; background: rgba(255, 87, 34, 0.3); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                            <input type="radio" name="share0dinSeverity" value="High" style="cursor: pointer;">
+                            High
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 5px; background: rgba(244, 67, 54, 0.3); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                            <input type="radio" name="share0dinSeverity" value="Critical" style="cursor: pointer;">
+                            Critical
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px;">Tags (click to add):</label>
+
+                    <!-- Selected Tags Display -->
+                    <div id="selectedTags" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; min-height: 40px; margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 6px;">
+                        <span style="font-size: 11px; opacity: 0.6;">No tags selected</span>
+                    </div>
+
+                    <!-- Tag Categories -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 6px; max-height: 200px; overflow-y: auto;">
+                        <!-- Technique Tags -->
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 11px; font-weight: bold; opacity: 0.7; margin-bottom: 6px;">TECHNIQUE:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                <span class="tag-option" data-tag="DAN-based">DAN-based</span>
+                                <span class="tag-option" data-tag="Roleplay">Roleplay</span>
+                                <span class="tag-option" data-tag="Hypothetical-Scenario">Hypothetical-Scenario</span>
+                                <span class="tag-option" data-tag="System-Override">System-Override</span>
+                                <span class="tag-option" data-tag="Prompt-Injection">Prompt-Injection</span>
+                                <span class="tag-option" data-tag="Character-Persona">Character-Persona</span>
+                            </div>
+                        </div>
+
+                        <!-- Target Tags -->
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 11px; font-weight: bold; opacity: 0.7; margin-bottom: 6px;">TARGET:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                <span class="tag-option" data-tag="ChatGPT-4o">ChatGPT-4o</span>
+                                <span class="tag-option" data-tag="Claude-Sonnet">Claude-Sonnet</span>
+                                <span class="tag-option" data-tag="Gemini-2.0">Gemini-2.0</span>
+                                <span class="tag-option" data-tag="Multi-LLM">Multi-LLM</span>
+                            </div>
+                        </div>
+
+                        <!-- Success Rate Tags -->
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 11px; font-weight: bold; opacity: 0.7; margin-bottom: 6px;">SUCCESS RATE:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                <span class="tag-option" data-tag="High-Success">High-Success (&gt;80%)</span>
+                                <span class="tag-option" data-tag="Medium-Success">Medium-Success (50-80%)</span>
+                                <span class="tag-option" data-tag="Low-Success">Low-Success (&lt;50%)</span>
+                            </div>
+                        </div>
+
+                        <!-- Attack Vector Tags -->
+                        <div>
+                            <div style="font-size: 11px; font-weight: bold; opacity: 0.7; margin-bottom: 6px;">ATTACK VECTOR:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                <span class="tag-option" data-tag="Context-Manipulation">Context-Manipulation</span>
+                                <span class="tag-option" data-tag="Instruction-Override">Instruction-Override</span>
+                                <span class="tag-option" data-tag="Safety-Bypass">Safety-Bypass</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Tag Input -->
+                    <div style="margin-top: 10px; display: flex; gap: 8px;">
+                        <input type="text" id="customTagInput" placeholder="Add custom tag..." style="flex: 1; padding: 6px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; color: white; font-size: 12px;">
+                        <button id="addCustomTagBtn" style="background: rgba(255,215,0,0.3); border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; color: white; font-size: 12px; font-weight: bold;">+ Add</button>
+                    </div>
+                </div>
+
+                <!-- LLM Used (manually editable) -->
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px;">LLM Tested:</label>
+                    <input type="text" id="share0dinLLM" placeholder="Chatgpt 5.2" style="width: 100%; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; color: white; font-size: 12px;">
+                </div>
+
+                <!-- Submit Button -->
+                <button id="submit0dinShareBtn" class="primary" style="width: 100%; font-size: 14px; font-weight: bold;">✓ Submit to 0DIN</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="enhanced-popup.js"></script>
+</body>
+
+</html>
