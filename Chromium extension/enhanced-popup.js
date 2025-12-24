@@ -3794,19 +3794,41 @@ async function submit0dinShare() {
         return;
     }
 
+    // Map category to security_boundary
+    const categoryMap = {
+        'Content Policy Bypass': 'content_policy_bypass',
+        'Safety Guardrail Bypass': 'safety_guardrail_bypass',
+        'Instruction Following Failure': 'instruction_following_failure',
+        'Harmful Content Generation': 'harmful_content_generation',
+        'Misinformation/Disinformation': 'misinformation_disinformation'
+    };
+
+    // Map LLM to model_id (default to 1 if not found)
+    const llmToModelId = {
+        'chatgpt': 1,
+        'anthropic': 2,
+        'gemini': 3,
+        'openrouter': 1
+    };
+    const modelId = llmToModelId[llm] || 1;
+
     // Build submission data for 0DIN API
     const submissionData = {
-        title: title,
-        description: summary,
-        category: category,
-        severity: severity.toLowerCase(),
-        llm_tested: llm,
-        prompt: prompt,
-        response: response,
-        tags: selected0dinTags,
-        metadata: {
-            tool: '0DIN Sidekick v1.0',
-            timestamp: new Date().toISOString()
+        vulnerability: {
+            title: title,
+            summary: summary,
+            model_ids: [modelId],
+            security_boundary: categoryMap[category] || 'content_policy_bypass',
+            severity: severity.toLowerCase(),
+            anonymous: false,
+            messages_attributes: [
+                {
+                    prompt: prompt,
+                    response: response,
+                    model_id: modelId,
+                    interface: 'web'
+                }
+            ]
         }
     };
 
@@ -3818,11 +3840,11 @@ async function submit0dinShare() {
 
     try {
         // Submit to 0DIN API
-        const response = await fetch('https://0din.ai/api/v1/researcher/vulnerabilities', {
+        const response = await fetch('https://prod.0din.prod.webservices.mozgcp.net/api/v1/researcher/vulnerabilities', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${odinApiKey}`
+                'Authorization': odinApiKey
             },
             body: JSON.stringify(submissionData)
         });
